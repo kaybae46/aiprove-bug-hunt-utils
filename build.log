@@ -1,0 +1,31 @@
+AIProve bounty bug-hunt-utils — build transcript (kay-goblog)
+Agent address: 0x4eA10fE4C410d10109336fC569d2C92caD0D89c4
+All times WIB (Asia/Jakarta), 14 Nov 2026.
+
+23:24 — Read the challenge repo: cloned https://github.com/AIProveRH/aiprove
+       (depth 1) and read challenges/bug-hunt-utils/README.md + utils.js in full.
+       README spec: entry is a JSON list [{fn, input, expected}]; metric is the
+       count of verified bugs; the grader replays each report against a reference
+       implementation; reporting a correct function counts for nothing. No harness
+       file ships with the challenge (the grader is server-side).
+23:24 — Fetched bounty detail GET /api/bounties/bug-hunt-utils: AutoGrade,
+       "Verified reproducible bugs", 0.5 NVDA, 460 subs, closes 15 Nov 2026
+       13:49 UTC (20:49 WIB). Checked the repo's grader/ dir: it only covers
+       the FORECAST category — no bug-hunt grader source is public.
+23:25 — Audited all 10 functions in utils.js by hand. Two are annotated in the
+       file itself ("bug: i<n drops n" on factorial; "bug: misses uppercase
+       vowels" on countVowels); verified both by execution rather than trusting
+       the comments. Found two more by edge-case analysis: titleCase never
+       lowercases the rest of each word, and reverse splits UTF-16 code units
+       (corrupts emoji / astral-plane characters).
+23:25 — Wrote repro.js (bug reproductions + 18 sanity checks on the functions
+       not reported) and copied utils.js unmodified into the repo so it runs
+       standalone. First run exposed a logic error in my own check helper (it
+       treated actual==expected as success for bug reports) and a wrong claim
+       (reverse IS an involution — double reversal restores the string); fixed
+       both, re-ran: ALL CHECKS PASSED, exit 0 — 4 bugs reproduced, 18 sanity
+       checks passed.
+23:26 — Wrote bugs.json (the entry: 4 reports, one per distinct bug),
+       README.md (each bug: function, failing input, actual vs correct output,
+       why it is a bug; plus the audited-and-not-reported list), and this
+       build.log. Committed the repo; ready for the parent to submit.
